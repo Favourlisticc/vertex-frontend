@@ -6,33 +6,25 @@ import { MapPinIcon, ArrowRightIcon, ChevronDownIcon, UsersIcon, TruckIcon } fro
 import { PhoneIcon, ChatBubbleLeftRightIcon } from "@heroicons/react/24/solid";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
-import 'leaflet/dist/leaflet.css';
-import L from 'leaflet';
+import dynamic from 'next/dynamic';
 import InfiniteImageSlider from "./InfiniteImageSlider";
-
-// Fix for default markers in react-leaflet - TypeScript compatible version
-// Create a custom icon to ensure it works properly
-const customIcon = new L.Icon({
-  iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
-  shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowSize: [41, 41]
-});
-
 import HealthPackages from "./HealthPackages";
 import DiagnosticServices from "./diagnosticServices";
+
+// Dynamically import the map component with ssr: false to prevent window is not defined error
+const MapWithNoSSR = dynamic(
+  () => import('./MapComponent'),
+  { ssr: false }
+);
 
 export default function VertexLanding() {
   // Toggle open panel
   const [openId, setOpenId] = useState<string | null>(null);
+
   const [showScheduler, setShowScheduler] = useState(false);
   const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
-  const [selectedEmail, setSelectedEmail] = useState<string>("");
-  const [bookingStatus, setBookingStatus] = useState<string | null>(null);
+  const [selectedEmail, setSelectedEmail] = useState("");
+  const [bookingStatus, setBookingStatus] = useState<"success" | "error" | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   
   // Animation on component mount
@@ -46,7 +38,7 @@ export default function VertexLanding() {
       id: "basic",
       title: "Basic Screening",
       blurb: "Quick insights, lasting peace of mind.",
-      body: `Our Basic Screening package delivers the essential health metrics everyone should track—vital signs, complete blood count, blood‑sugar and lipid panels, plus a urinalysis—all performed with hospital‑grade equipment and a focus on speed and comfort. Results are turned around within 24 hours and published to your secure online portal, letting you catch early warning signs and make lifestyle tweaks before small issues become serious.`,
+      body: `Our Basic Screening package delivers the essential health metrics everyone should track--vital signs, complete blood count, blood‑sugar and lipid panels, plus a urinalysis--all performed with hospital‑grade equipment and a focus on speed and comfort. Results are turned around within 24 hours and published to your secure online portal, letting you catch early warning signs and make lifestyle tweaks before small issues become serious.`,
       image: "/images/basic-screening.png",
       alt: "Nurse chatting with patient while holding clipboard"
     },
@@ -69,13 +61,15 @@ export default function VertexLanding() {
     {
       id: "comprehensive",
       title: "Comprehensive Medical Check",
-      blurb: "Your 360° health audit—one appointment, one actionable report.",
+      blurb: "Your 360° health audit--one appointment, one actionable report.",
       body: `Ideal for executives and anyone seeking a full‑scope health picture, this half‑day program layers advanced diagnostics onto our Basic Screening: cardiac stress ECG, abdominal & thyroid ultrasound, cancer‑marker panels, full metabolic work‑up, and lifestyle counseling. You leave with a physician‑led debrief, a prioritized action plan, and a beautifully structured report.`,
       image: "/images/comprehensive-check.png",
       alt: "Doctor drawing blood from smiling patient"
     }
   ];
-  const toggle = (id: string) => setOpenId(prev => (prev === id ? null : id));
+  const toggle = (id: string | null) => setOpenId(prev => (prev === id ? null : id));
+
+
   // Use OpenStreetMap coordinates for Lekki Phase 1, Lagos
   const mapCoords = {
     lat: 6.433,
@@ -88,9 +82,9 @@ export default function VertexLanding() {
   // Static map image
   const mapSrc = "/images/map-preview.png";
 
-  /* ——————————————————————————————————
+  /* --------------------------------------------------------------------
      2.  Mark-up
-  —————————————————————————————————— */
+  -------------------------------------------------------------------- */
   return (
     <>
       <section className="relative overflow-hidden bg-gradient-to-br from-gray-900 to-gray-800">
@@ -327,27 +321,8 @@ export default function VertexLanding() {
       {/* Map section - takes up 3/5 of space on large screens */}
       <div className="lg:col-span-3 rounded-xl overflow-hidden shadow-lg border border-gray-200">
         <div className="relative h-[400px] w-full bg-gray-100">
-          <MapContainer 
-            center={[6.433, 3.452]} 
-            zoom={15} 
-            style={{ height: '100%', width: '100%' }}
-            scrollWheelZoom={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-            <Marker position={[6.433, 3.452]} icon={customIcon}>
-              <Popup>
-                <b>Vertex Diagnostic Center</b><br />40 Providence Street<br />Lekki Phase 1, Lagos
-              </Popup>
-            </Marker>
-            <Circle
-              center={[6.433, 3.452]}
-              pathOptions={{ color: 'teal', fillColor: '#0d9488', fillOpacity: 0.2 }}
-              radius={200}
-            />
-          </MapContainer>
+          {/* Dynamic import of MapContainer */}
+          <MapWithNoSSR mapCoords={mapCoords} />
         </div>
         
         <div className="bg-white p-4 sm:p-6 border-t border-gray-100">
@@ -475,6 +450,7 @@ export default function VertexLanding() {
                 </p>
               </div>
             </details>
+            
             
             {/* Ride-hailing Services Panel */}
             <details className="group">
@@ -669,7 +645,7 @@ export default function VertexLanding() {
                     <DatePicker
                       id="date"
                       selected={selectedDateTime}
-                      onChange={(date) => setSelectedDateTime(date)}
+                      onChange={(date: Date | null) => setSelectedDateTime(date)}
                       showTimeSelect
                       filterDate={(date) => date.getDay() !== 0}
                       filterTime={(time) => {
