@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import "./globals.css";
+import Header from "./components/Header";
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: '/logo.png',
+        url: '/images/logo.png', // Updated path
         width: 800,
         height: 600,
         alt: 'Vertex Diagnostic Center Logo',
@@ -76,14 +77,15 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Vertex Diagnostic" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
 
-        <meta property="og:image" content="/logo.png" />
+        <meta property="og:image" content="/images/logo.png" /> {/* Updated path */}
 
-        <meta name="twitter:image" content="/logo.png" />
-
-
+        <meta name="twitter:image" content="/images/logo.png" /> {/* Updated path */}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}>
-        {children}
+        <Header />
+        <main className="min-h-screen">
+          {children}
+        </main>
       </body>
     </html>
   );
