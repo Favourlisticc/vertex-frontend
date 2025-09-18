@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     type: 'website',
     images: [
       {
-        url: 'https://lekkilab.com/logo.png',
+        url: '/logo.png',
         width: 800,
         height: 600,
         alt: 'Vertex Diagnostic Center Logo',
