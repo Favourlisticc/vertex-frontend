@@ -75,6 +75,12 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="default" />
         <meta name="apple-mobile-web-app-title" content="Vertex Diagnostic" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+
+        <meta property="og:image" content="/logo.png" />
+
+        <meta name="twitter:image" content="/logo.png" />
+
+
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}>
         {children}
