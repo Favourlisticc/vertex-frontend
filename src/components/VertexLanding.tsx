@@ -11,12 +11,16 @@ import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import InfiniteImageSlider from "./InfiniteImageSlider";
 
-// Fix for default markers in react-leaflet
-delete L.Icon.Default.prototype._getIconUrl;
-L.Icon.Default.mergeOptions({
-  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
+// Fix for default markers in react-leaflet - TypeScript compatible version
+// Create a custom icon to ensure it works properly
+const customIcon = new L.Icon({
   iconUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png',
+  iconRetinaUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png',
   shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png',
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41]
 });
 
 import HealthPackages from "./HealthPackages";
@@ -42,7 +46,7 @@ export default function VertexLanding() {
       id: "basic",
       title: "Basic Screening",
       blurb: "Quick insights, lasting peace of mind.",
-      body: `Our Basic Screening package delivers the essential health metrics everyone should track—vital signs, complete blood count, blood‑sugar and lipid panels, plus a urinalysis—all performed with hospital‑grade equipment and a focus on speed and comfort. Results are turned around within 24 hours and published to your secure online portal, letting you catch early warning signs and make lifestyle tweaks before small issues become serious.`,
+      body: `Our Basic Screening package delivers the essential health metrics everyone should track—vital signs, complete blood count, blood‑sugar and lipid panels, plus a urinalysis—all performed with hospital‑grade equipment and a focus on speed and comfort. Results are turned around within 24 hours and published to your secure online portal, letting you catch early warning signs and make lifestyle tweaks before small issues become serious.`,
       image: "/images/basic-screening.png",
       alt: "Nurse chatting with patient while holding clipboard"
     },
@@ -56,9 +60,9 @@ export default function VertexLanding() {
     },
     {
       id: "staffscreening",
-      title: "Diagnostic Staff Screening",
+      title: "Diagnostic Staff Screening",
       blurb: "Protect your team. Safeguard your patients.",
-      body: `Healthcare professionals face unique occupational risks, so this package targets infectious‑disease exposure and procedural fitness. We screen for Hep B, Hep C, HIV, and TB; confirm immunization titers; and assess manual‑handling and sharps safety competence. Optional periodic mental‑health check‑ins help combat burnout. Reports are aggregated for compliance dashboards yet remain privacy‑centric.`,
+      body: `Healthcare professionals face unique occupational risks, so this package targets infectious‑disease exposure and procedural fitness. We screen for Hep B, Hep C, HIV, and TB; confirm immunization titers; and assess manual‑handling and sharps safety competence. Optional periodic mental‑health check‑ins help combat burnout. Reports are aggregated for compliance dashboards yet remain privacy‑centric.`,
       image: "/images/staff-screening.png",
       alt: "Healthcare workers queued for temperature check"
     },
@@ -333,7 +337,7 @@ export default function VertexLanding() {
               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <Marker position={[6.433, 3.452]}>
+            <Marker position={[6.433, 3.452]} icon={customIcon}>
               <Popup>
                 <b>Vertex Diagnostic Center</b><br />40 Providence Street<br />Lekki Phase 1, Lagos
               </Popup>

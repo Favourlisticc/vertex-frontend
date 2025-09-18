@@ -4,13 +4,32 @@ import { useState, useEffect } from "react";
 import { CheckIcon, XMarkIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
+// Define types for our form data
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  date: string;
+  time: string;
+  package: string;
+}
+
+interface Errors {
+  name?: string;
+  email?: string;
+  phone?: string;
+  date?: string;
+  time?: string;
+  package?: string;
+}
+
 export default function HealthPackages() {
   // State for booking form
   const [showBookingForm, setShowBookingForm] = useState(false);
-  const [selectedPackage, setSelectedPackage] = useState(null);
+  const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   
   // Form state
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
     phone: "",
@@ -20,28 +39,28 @@ export default function HealthPackages() {
   });
   
   // Form validation
-  const [errors, setErrors] = useState({});
-  const [bookingStatus, setBookingStatus] = useState(null);
+  const [errors, setErrors] = useState<Errors>({});
+  const [bookingStatus, setBookingStatus] = useState<string | null>(null);
 
   // Handle form input changes
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value
     });
     
-    if (errors[name]) {
+    if (errors[name as keyof Errors]) {
       setErrors({
         ...errors,
-        [name]: null
+        [name]: undefined
       });
     }
   };
 
   // Validate form
   const validateForm = () => {
-    const newErrors = {};
+    const newErrors: Errors = {};
     
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.email.trim()) {
@@ -63,7 +82,7 @@ export default function HealthPackages() {
   };
 
   // Handle form submission
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
@@ -89,7 +108,7 @@ export default function HealthPackages() {
   };
 
   // Open WhatsApp with package details
-  const openWhatsApp = (packageName) => {
+  const openWhatsApp = (packageName: string) => {
     const phoneNumber = "2348166634066"; // WhatsApp requires country code
     const message = `Hello, I would like to book the ${packageName} Health Package. Please provide more information.`;
     const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
@@ -280,7 +299,7 @@ export default function HealthPackages() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1.8, duration: 0.5 }}
                 >
-                  <td colSpan="4" className="px-6 py-4 bg-gray-100">
+                  <td  className="px-6 py-4 bg-gray-100">
                     <div className="text-lg font-semibold text-gray-700">OPTIONAL*</div>
                   </td>
                 </motion.tr>
@@ -295,7 +314,7 @@ export default function HealthPackages() {
                     <td className="px-6 py-3 text-base text-gray-900">
                       *{test}
                     </td>
-                    <td colSpan="3" className={idx === 0 ? "px-6 py-3" : "px-6 py-1"}>
+                    <td className={idx === 0 ? "px-6 py-3" : "px-6 py-1"}>
                       {idx === 0 && (
                         <motion.div 
                           className="text-amber-500 font-medium text-right"
@@ -360,6 +379,8 @@ export default function HealthPackages() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.72.043.433-.101.593z"/>
                 </svg>
+
+                
                 Book Premium (₦120,000)
               </button>
             </motion.div>

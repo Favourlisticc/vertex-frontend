@@ -2,7 +2,21 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const diagnosticServices = [
+// Define the Service type
+interface Service {
+  id: string;
+  name: string;
+  tagline: string;
+  description: string;
+  keyBenefits: string[];
+  commonTests: string[];
+  sampleType: string;
+  turnaroundTime: string;
+  price: string;
+  ctaText: string;
+}
+
+const diagnosticServices: Service[] = [
   {
     id: '4d-ultrasound',
     name: '4D Ultrasound & Radiology',
@@ -299,10 +313,10 @@ const diagnosticServices = [
 ];
 
 export default function DiagnosticServices() {
-  const [selectedService, setSelectedService] = useState(null);
+  const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isCardOpen, setIsCardOpen] = useState(false);
 
-  const handleServiceClick = (service) => {
+  const handleServiceClick = (service: Service) => {
     setSelectedService(service);
     setIsCardOpen(true);
   };
@@ -384,7 +398,7 @@ export default function DiagnosticServices() {
           <motion.div
             key={service.id}
             className="bg-white rounded-xl p-6 border border-gray-100 cursor-pointer overflow-hidden"
-            variants={itemVariants}
+           
             whileHover="hover"
             onClick={() => handleServiceClick(service)}
           >
@@ -416,7 +430,6 @@ export default function DiagnosticServices() {
           >
             <motion.div
               className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
-              variants={cardVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
