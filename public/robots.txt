@@ -1,0 +1,13 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://lekkilab.com/sitemap.xml
+
+# API endpoints
+Disallow: /api/
+
+# Don't index development routes
+Disallow: /_next/
+Disallow: /static/
