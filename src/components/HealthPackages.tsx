@@ -360,7 +360,7 @@ export default function HealthPackages() {
                 className={`flex-1 py-3 px-2 text-center transition-colors duration-200 relative ${selectedPackage === pkg.id ? 'text-blue-600' : 'text-gray-500'}`}
               >
                 <div className="flex flex-col items-center">
-                  <span className="text-2xl mb-1">{pkg.medal}</span>
+                  <span className="text-xl mb-1">{pkg.medal}</span>
                   <span className="text-sm font-medium">{pkg.name}</span>
                   <span className="text-xs">{pkg.price}</span>
                 </div>
@@ -387,11 +387,11 @@ export default function HealthPackages() {
                   <span className="text-2xl mr-2">
                     {selectedPackage === "basic" ? "🥉" : selectedPackage === "standard" ? "🥈" : "🥇"}
                   </span>
-                  <h3 className="text-lg font-semibold">
+                  <h3 className="text-lg text-gray-600 font-semibold ">
                     {selectedPackage === "basic" ? "Basic" : selectedPackage === "standard" ? "Standard" : "Premium"} Package
                   </h3>
                 </div>
-                <div className="text-lg font-bold">
+                <div className="text-lg text-gray-600 font-bold">
                   {selectedPackage === "basic" ? "₦20,000" : selectedPackage === "standard" ? "₦60,000" : "₦120,000"}
                 </div>
               </div>

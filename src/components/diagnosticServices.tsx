@@ -495,12 +495,17 @@ export default function DiagnosticServices() {
                 </div>
 
                 <motion.button
-                  className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {selectedService.ctaText}
-                </motion.button>
+  className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors"
+  whileHover={{ scale: 1.02 }}
+  whileTap={{ scale: 0.98 }}
+  onClick={() => {
+    const message = `Hello! I'm interested in booking the ${selectedService.name} service.`;
+    const whatsappUrl = `https://wa.me/2348166634066?text=${encodeURIComponent(message)}`;
+    window.open(whatsappUrl, '_blank');
+  }}
+>
+  {selectedService.ctaText}
+</motion.button>
               </div>
             </motion.div>
           </motion.div>
