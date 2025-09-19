@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { GeistSans } from 'geist/font/sans';
 import { GeistMono } from 'geist/font/mono';
 import "./globals.css";
-import Header from "./components/Header";
 
 const geistSans = GeistSans;
 const geistMono = GeistMono;
@@ -82,7 +81,7 @@ export default function RootLayout({
         <meta name="twitter:image" content="/images/logo.png" /> {/* Updated path */}
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-50`}>
-        <Header />
+      
         <main className="min-h-screen">
           {children}
         </main>

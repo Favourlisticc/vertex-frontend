@@ -41,6 +41,8 @@ export default function HealthPackages() {
   // Form validation
   const [errors, setErrors] = useState<Errors>({});
   const [bookingStatus, setBookingStatus] = useState<string | null>(null);
+  // For mobile view, track which tests to show details for
+  const [expandedTests, setExpandedTests] = useState<{[key: string]: boolean}>({});
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -115,6 +117,14 @@ export default function HealthPackages() {
     window.open(whatsappUrl, '_blank');
   };
 
+  // Toggle expanded state for tests on mobile
+  const toggleTestDetails = (testName: string) => {
+    setExpandedTests(prev => ({
+      ...prev,
+      [testName]: !prev[testName]
+    }));
+  };
+
   // Table data for tests and packages
   const testsData = [
     { name: "Full Blood Count", basic: true, standard: true, premium: true },
@@ -141,6 +151,12 @@ export default function HealthPackages() {
     "Stool Microscopy",
     "Testosterone"
   ];
+
+  useEffect(() => {
+    if (!selectedPackage) {
+      setSelectedPackage("basic");
+    }
+  }, []);
   
   const packages = [
     {
@@ -173,20 +189,20 @@ export default function HealthPackages() {
   ];
 
   return (
-    <div className="py-10 bg-white">
+    <div className="py-6 sm:py-10 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
-          className="mb-8 text-center"
+          className="mb-6 sm:mb-8 text-center"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">HEALTH PACKAGES</h1>
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">HEALTH PACKAGES</h1>
         </motion.div>
 
-        {/* Table */}
+        {/* Desktop Table View (hidden on small screens) */}
         <motion.div 
-          className="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200"
+          className="hidden md:block bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
@@ -299,7 +315,7 @@ export default function HealthPackages() {
                   animate={{ opacity: 1 }}
                   transition={{ delay: 1.8, duration: 0.5 }}
                 >
-                  <td  className="px-6 py-4 bg-gray-100">
+                  <td colSpan={4} className="px-6 py-4 bg-gray-100">
                     <div className="text-lg font-semibold text-gray-700">OPTIONAL*</div>
                   </td>
                 </motion.tr>
@@ -314,15 +330,15 @@ export default function HealthPackages() {
                     <td className="px-6 py-3 text-base text-gray-900">
                       *{test}
                     </td>
-                    <td className={idx === 0 ? "px-6 py-3" : "px-6 py-1"}>
+                    <td className={idx === 0 ? "px-6 py-3" : "px-6 py-1"} colSpan={3}>
                       {idx === 0 && (
                         <motion.div 
-                          className="text-amber-500 font-medium text-right"
+                          className="text-amber-500 font-medium text-center"
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: 2.0, duration: 0.5 }}
                         >
-                          FREE medical consultations<br/>for groups of 5+ on<br/>Standard & Premium
+                          FREE medical consultations for groups of 5+ on Standard & Premium
                         </motion.div>
                       )}
                     </td>
@@ -331,11 +347,122 @@ export default function HealthPackages() {
               </tbody>
             </table>
           </div>
+        </motion.div>
 
+        {/* Mobile View (visible only on small screens) */}
+        <div className="md:hidden">
+          {/* Package selector tabs for mobile */}
+          <div className="flex mb-4 border-b border-gray-200">
+            {packages.map((pkg, index) => (
+              <button 
+                key={pkg.id}
+                onClick={() => setSelectedPackage(pkg.id)}
+                className={`flex-1 py-3 px-2 text-center transition-colors duration-200 relative ${selectedPackage === pkg.id ? 'text-blue-600' : 'text-gray-500'}`}
+              >
+                <div className="flex flex-col items-center">
+                  <span className="text-2xl mb-1">{pkg.medal}</span>
+                  <span className="text-sm font-medium">{pkg.name}</span>
+                  <span className="text-xs">{pkg.price}</span>
+                </div>
+                {selectedPackage === pkg.id && (
+                  <motion.div 
+                    className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500"
+                    layoutId="activePackageIndicator"
+                  />
+                )}
+              </button>
+            ))}
+          </div>
+
+          {/* Mobile Package Details */}
+          <motion.div
+            className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+          >
+            <div className="p-4 bg-gray-50 border-b border-gray-200">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center">
+                  <span className="text-2xl mr-2">
+                    {selectedPackage === "basic" ? "🥉" : selectedPackage === "standard" ? "🥈" : "🥇"}
+                  </span>
+                  <h3 className="text-lg font-semibold">
+                    {selectedPackage === "basic" ? "Basic" : selectedPackage === "standard" ? "Standard" : "Premium"} Package
+                  </h3>
+                </div>
+                <div className="text-lg font-bold">
+                  {selectedPackage === "basic" ? "₦20,000" : selectedPackage === "standard" ? "₦60,000" : "₦120,000"}
+                </div>
+              </div>
+            </div>
+
+            {/* Tests list for selected package */}
+            <div className="divide-y divide-gray-200">
+              {testsData.map((test, index) => {
+                const isIncluded = selectedPackage === "basic" ? test.basic : 
+                                  selectedPackage === "standard" ? test.standard : test.premium;
+                
+                return (
+                  <div 
+                    key={test.name}
+                    className={`p-3 flex items-center justify-between ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}
+                  >
+                    <span className="text-sm text-gray-800">{test.name}</span>
+                    <div className="ml-2">
+                      {isIncluded ? (
+                        <CheckIcon className="h-5 w-5 text-green-600" />
+                      ) : (
+                        <XMarkIcon className="h-5 w-5 text-red-500" />
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Optional tests for mobile */}
+              <div className="p-3 bg-gray-100">
+                <div className="text-base font-semibold text-gray-700">OPTIONAL TESTS</div>
+              </div>
+              
+              {optionalTests.map((test, idx) => (
+                <div key={test} className="p-3 flex items-center">
+                  <span className="text-sm text-gray-800">*{test}</span>
+                </div>
+              ))}
+              
+              {/* Mobile promo message */}
+              <div className="p-3 bg-amber-50">
+                <p className="text-sm text-amber-600 font-medium text-center">
+                  FREE medical consultations for groups of 5+ on Standard & Premium packages
+                </p>
+              </div>
+            </div>
+
+            {/* Mobile Book Button */}
+            <div className="p-4 bg-gray-50 border-t border-gray-200">
+              <button 
+                onClick={() => openWhatsApp(selectedPackage === "basic" ? "Basic" : selectedPackage === "standard" ? "Standard" : "Premium")} 
+                className={`w-full py-3 px-4 rounded-md shadow text-white flex items-center justify-center
+                  ${selectedPackage === "basic" ? "bg-amber-600 hover:bg-amber-700" : 
+                    selectedPackage === "standard" ? "bg-gray-500 hover:bg-gray-600" : 
+                    "bg-yellow-500 hover:bg-yellow-600"} transition-colors duration-200`}
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.72.043.433-.101.593z"/>
+                </svg>
+                Book {selectedPackage === "basic" ? "Basic" : selectedPackage === "standard" ? "Standard" : "Premium"} Package
+              </button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Common Footer for both views */}
+        <div className="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
           {/* Call to Action Buttons */}
-          <div className="bg-gray-50 px-6 py-4 flex flex-wrap justify-between items-center">
+          <div className="bg-gray-50 px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <motion.div 
-              className="flex items-center mb-3 md:mb-0"
+              className="flex items-center mb-4 sm:mb-0"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 2.2, duration: 0.5 }}
@@ -345,11 +472,12 @@ export default function HealthPackages() {
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
                 </svg>
               </div>
-              <span className="text-gray-700 font-bold">0816 663 4066</span>
+              <a href="tel:+2348166634066" className="text-gray-700 font-bold">0816 663 4066</a>
             </motion.div>
             
+            {/* Only show buttons on desktop (mobile has its own buttons) */}
             <motion.div 
-              className="flex flex-wrap justify-center w-full md:w-auto md:justify-end gap-3"
+              className="hidden md:flex flex-wrap justify-center w-full md:w-auto md:justify-end gap-3"
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 2.3, duration: 0.5 }}
@@ -379,31 +507,31 @@ export default function HealthPackages() {
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.72.043.433-.101.593z"/>
                 </svg>
-
-                
                 Book Premium (₦120,000)
               </button>
             </motion.div>
           </div>
           
           <motion.div 
-            className="bg-white px-6 py-4 flex flex-wrap justify-between items-center border-t border-gray-200"
+            className="bg-white px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center border-t border-gray-200"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 2.4, duration: 0.5 }}
           >
-            <div className="text-gray-700 mb-2 sm:mb-0">
+            <div className="text-gray-700 text-sm sm:text-base mb-2 sm:mb-0">
               <span className="font-medium">Visit Us:</span> 🏢 40 Providence St, Lekki Phase 1, Lagos 📍
             </div>
             <div className="flex items-center">
-              <span className="mr-2 text-gray-700">Book Online</span>
+              <span className="mr-2 text-gray-700 text-sm sm:text-base">Book Online</span>
               <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-blue-500" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM4.332 8.027a6.012 6.012 0 011.912-2.706C6.512 5.73 6.974 6 7.5 6A1.5 1.5 0 019 7.5V8a2 2 0 004 0 2 2 0 011.523-1.943A5.977 5.977 0 0116 10c0 .34-.028.675-.083 1H15a2 2 0 00-2 2v2.197A5.973 5.973 0 0110 16v-2a2 2 0 00-2-2 2 2 0 01-2-2 2 2 0 00-1.668-1.973z" clipRule="evenodd" />
               </svg>
             </div>
           </motion.div>
-        </motion.div>
+        </div>
       </div>
+
+    
     </div>
   );
 }
