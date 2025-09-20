@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { CheckIcon, XMarkIcon, SparklesIcon } from "@heroicons/react/24/solid";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -43,6 +43,32 @@ export default function HealthPackages() {
   const [bookingStatus, setBookingStatus] = useState<string | null>(null);
   // For mobile view, track which tests to show details for
   const [expandedTests, setExpandedTests] = useState<{[key: string]: boolean}>({});
+
+  // For sticky header animation
+  const tableRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isSticky, setIsSticky] = useState(false);
+  const [stickyDesktop, setStickyDesktop] = useState(false);
+  const desktopTableRef = useRef<HTMLDivElement>(null);
+
+  // Handle scroll for sticky header
+  useEffect(() => {
+    const handleScroll = () => {
+      if (tableRef.current) {
+        const tableTop = tableRef.current.getBoundingClientRect().top;
+        setIsSticky(tableTop <= 0);
+      }
+      
+      // For desktop sticky header
+      if (desktopTableRef.current) {
+        const desktopTableTop = desktopTableRef.current.getBoundingClientRect().top;
+        setStickyDesktop(desktopTableTop <= 0);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Handle form input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -189,19 +215,49 @@ export default function HealthPackages() {
   ];
 
   return (
-    <div className="py-6 sm:py-10 bg-white">
+    <div className="py-6 sm:py-10 bg-white" ref={containerRef}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
-          className="mb-6 sm:mb-8 text-center"
+          className={`mb-6 sm:mb-8 text-center ${isSticky || stickyDesktop ? 'max-sm:hidden ' : ''}`}
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">HEALTH PACKAGES</h1>
         </motion.div>
-
-        {/* Desktop Table View (hidden on small screens) */}
-        <motion.div 
+        
+       {/* Desktop Sticky Header */}
+       <motion.div 
+          className={`hidden md:block sticky top-0 z-20 bg-white transition-all duration-300 ${stickyDesktop ? 'shadow-md py-2 px-4' : 'py-0 opacity-0 pointer-events-none h-0 overflow-hidden'}`}
+          initial={false}
+          animate={{ 
+            padding: stickyDesktop ? '0.5rem 1rem' : '0',
+            opacity: stickyDesktop ? 1 : 0,
+            height: stickyDesktop ? 'auto' : '0',
+          }}
+        >
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-bold text-gray-900">HEALTH PACKAGES</h2>
+            <div className="flex space-x-4">
+              {packages.map((pkg) => (
+                <button 
+                  key={pkg.id}
+                  onClick={() => setSelectedPackage(pkg.id)}
+                  className={`py-2 px-3 rounded-md transition-colors duration-200 flex items-center
+                    ${selectedPackage === pkg.id ? `bg-${pkg.id === 'basic' ? 'amber-100' : pkg.id === 'standard' ? 'gray-100' : 'yellow-100'} ${pkg.color}` : 'text-gray-500 hover:bg-gray-100'}`}
+                >
+                  <span className="text-lg mr-1">{pkg.medal}</span>
+                  <span className="font-medium">{pkg.name}</span>
+                  <span className="ml-1 text-sm">({pkg.price})</span>
+                </button>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+        
+       {/* Desktop Table View (hidden on small screens) */}
+       <motion.div 
+          ref={desktopTableRef}
           className="hidden md:block bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -209,8 +265,8 @@ export default function HealthPackages() {
         >
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
-              <thead>
-                <tr className="bg-gray-50">
+              <thead className={`bg-gray-50 ${stickyDesktop ? 'sticky top-16 z-10 shadow-sm' : ''}`}>
+                <tr>
                   <th scope="col" className="px-6 py-4 text-left text-base font-medium text-gray-500 tracking-wider w-1/3">
                     Test / Service
                   </th>
@@ -350,33 +406,48 @@ export default function HealthPackages() {
         </motion.div>
 
         {/* Mobile View (visible only on small screens) */}
-        <div className="md:hidden">
-          {/* Package selector tabs for mobile */}
-          <div className="flex mb-4 border-b border-gray-200">
-            {packages.map((pkg, index) => (
-              <button 
-                key={pkg.id}
-                onClick={() => setSelectedPackage(pkg.id)}
-                className={`flex-1 py-3 px-2 text-center transition-colors duration-200 relative ${selectedPackage === pkg.id ? 'text-blue-600' : 'text-gray-500'}`}
-              >
-                <div className="flex flex-col items-center">
-                  <span className="text-xl mb-1">{pkg.medal}</span>
-                  <span className="text-sm font-medium">{pkg.name}</span>
-                  <span className="text-xs">{pkg.price}</span>
-                </div>
-                {selectedPackage === pkg.id && (
-                  <motion.div 
-                    className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500"
-                    layoutId="activePackageIndicator"
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+        <div className="md:hidden" ref={tableRef}>
+          {/* Sticky package selector for mobile */}
+          <motion.div 
+            className={`sticky top-0 z-10 bg-white border-b border-gray-200 transition-all duration-300 ${isSticky ? 'shadow-md py-2' : 'py-3'}`}
+            initial={false}
+            animate={{ 
+              padding: isSticky ? '0.5rem 0' : '0.75rem 0',
+            }}
+          >
+            {/* Include the title in the sticky header for mobile */}
+            {isSticky && (
+              <div className="text-center mb-1">
+                <h2 className="text-lg font-bold text-gray-900">HEALTH PACKAGES</h2>
+              </div>
+            )}
+            
+            <div className="flex">
+              {packages.map((pkg, index) => (
+                <button 
+                  key={pkg.id}
+                  onClick={() => setSelectedPackage(pkg.id)}
+                  className={`flex-1 py-2 px-2 text-center transition-colors duration-200 relative ${selectedPackage === pkg.id ? 'text-blue-600' : 'text-gray-500'}`}
+                >
+                  <div className="flex flex-col items-center">
+                    <span className={isSticky ? "text-lg" : "text-xl mb-1"}>{pkg.medal}</span>
+                    <span className="text-sm font-medium">{pkg.name}</span>
+                    <span className="text-xs">{pkg.price}</span>
+                  </div>
+                  {selectedPackage === pkg.id && (
+                    <motion.div 
+                      className="absolute bottom-0 left-0 right-0 h-1 bg-blue-500"
+                      layoutId="activePackageIndicator"
+                    />
+                  )}
+                </button>
+              ))}
+            </div>
+          </motion.div>
 
           {/* Mobile Package Details */}
           <motion.div
-            className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 mb-6"
+            className="bg-white shadow-lg rounded-xl overflow-hidden border border-gray-200 mb-6 mt-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4 }}
@@ -449,7 +520,7 @@ export default function HealthPackages() {
                     "bg-yellow-500 hover:bg-yellow-600"} transition-colors duration-200`}
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.72.043.433-.101.593z"/>
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.80-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.260.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.680.116-.173.231-.145.390-.087s1.011.477 1.184.564c.173.087.289.130.332.202.043.720.043.433-.101.593z"/>
                 </svg>
                 Book {selectedPackage === "basic" ? "Basic" : selectedPackage === "standard" ? "Standard" : "Premium"} Package
               </button>
@@ -484,19 +555,19 @@ export default function HealthPackages() {
             >
               <button 
                 onClick={() => openWhatsApp("Basic")} 
-                className="px-4 py-2 bg-amber-600 text-white rounded-md shadow hover:bg-amber-700 transition-colors duration-200 flex items-center"
+                className="px-4 py-2 bg-gray-500  text-white rounded-md shadow hover:bg-amber-700 transition-colors duration-200 flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.72.043.433-.101.593z"/>
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.80-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.260.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.680.116-.173.231-.145.390-.087s1.011.477 1.184.564c.173.087.289.130.332.202.043.720.043.433-.101.593z"/>
                 </svg>
                 Book Basic (₦20,000)
               </button>
               <button 
                 onClick={() => openWhatsApp("Standard")} 
-                className="px-4 py-2 bg-gray-500 text-white rounded-md shadow hover:bg-gray-600 transition-colors duration-200 flex items-center"
+                className="px-4 py-2  bg-amber-600 text-white rounded-md shadow hover:bg-gray-600 transition-colors duration-200 flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.72.043.433-.101.593z"/>
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.80-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.260.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.680.116-.173.231-.145.390-.087s1.011.477 1.184.564c.173.087.289.130.332.202.043.720.043.433-.101.593z"/>
                 </svg>
                 Book Standard (₦60,000)
               </button>
@@ -505,7 +576,7 @@ export default function HealthPackages() {
                 className="px-4 py-2 bg-yellow-500 text-white rounded-md shadow hover:bg-yellow-600 transition-colors duration-200 flex items-center"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-1" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.08-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.26.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.68.116-.173.231-.145.39-.087s1.011.477 1.184.564c.173.087.289.13.332.202.043.72.043.433-.101.593z"/>
+                  <path d="M12.031 6.172c-3.181 0-5.767 2.586-5.768 5.766-.001 1.298.38 2.27 1.019 3.287l-.582 2.128 2.182-.573c.978.58 1.911.928 3.145.929 3.178 0 5.767-2.587 5.768-5.766.001-3.187-2.575-5.77-5.764-5.771zm3.392 8.244c-.144.405-.837.774-1.17.824-.299.045-.677.063-1.092-.069-.252-.80-.575-.187-.988-.365-1.739-.751-2.874-2.502-2.961-2.617-.087-.116-.708-.94-.708-1.793s.448-1.273.607-1.446c.159-.173.346-.217.462-.217l.332.006c.106.005.249-.04.39.298.144.347.491 1.2.534 1.287.043.087.072.188.014.304-.058.116-.087.188-.173.289l-.260.304c-.087.086-.177.18-.076.354.101.174.449.741.964 1.201.662.591 1.221.774 1.394.86s.274.072.376-.043c.101-.116.433-.506.549-.680.116-.173.231-.145.390-.087s1.011.477 1.184.564c.173.087.289.130.332.202.043.720.043.433-.101.593z"/>
                 </svg>
                 Book Premium (₦120,000)
               </button>
@@ -530,8 +601,6 @@ export default function HealthPackages() {
           </motion.div>
         </div>
       </div>
-
-    
     </div>
   );
 }

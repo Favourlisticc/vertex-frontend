@@ -35,7 +35,7 @@ const diagnosticServices: Service[] = [
     ],
     sampleType: 'Imaging (no sample)',
     turnaroundTime: 'Immediate scan • Report in 2 hrs',
-    price: '₦18,000',
+    price: '₦15,000',
     ctaText: 'Book a Scan'
   },
   {
@@ -55,7 +55,7 @@ const diagnosticServices: Service[] = [
     ],
     sampleType: 'Whole blood (EDTA)',
     turnaroundTime: '24 hrs',
-    price: '₦5,000',
+    price: '₦6,000',
     ctaText: 'Order Blood Typing'
   },
   {
@@ -76,7 +76,7 @@ const diagnosticServices: Service[] = [
     ],
     sampleType: 'Blood (serum)',
     turnaroundTime: '24 hrs',
-    price: '₦6,000',
+    price: '₦12,000',
     ctaText: 'Order Chemistry Panel'
   },
   {
@@ -97,7 +97,7 @@ const diagnosticServices: Service[] = [
     ],
     sampleType: 'Blood, urine, stool (plus chest X-ray)',
     turnaroundTime: '48 hrs',
-    price: '₦15,000 - ₦30,000',
+    price: '₦15,000',
     ctaText: 'Schedule Staff Screening'
   },
   {
@@ -182,7 +182,7 @@ const diagnosticServices: Service[] = [
     ],
     sampleType: 'Urine, blood, stool, swabs',
     turnaroundTime: '48-72 hrs',
-    price: '₦5,000',
+    price: '₦14,000',
     ctaText: 'Order Culture Test'
   },
   {
@@ -203,7 +203,7 @@ const diagnosticServices: Service[] = [
     ],
     sampleType: 'Blood, stool, urine',
     turnaroundTime: '2-24 hrs',
-    price: '₦5,000',
+    price: '₦12,000',
     ctaText: 'Check for Parasites'
   },
   {
@@ -265,7 +265,7 @@ const diagnosticServices: Service[] = [
     ],
     sampleType: 'Semen sample',
     turnaroundTime: '24 hrs',
-    price: '₦10,000',
+    price: '₦14,000',
     ctaText: 'Book Fertility Test'
   },
   {
@@ -307,7 +307,7 @@ const diagnosticServices: Service[] = [
     ],
     sampleType: 'Urine, swab, blood',
     turnaroundTime: '4 hrs (NAAT) • 24 hrs (culture)',
-    price: '₦13,000',
+    price: '₦14,000',
     ctaText: 'Get Tested Today'
   }
 ];
