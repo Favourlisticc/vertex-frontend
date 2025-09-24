@@ -9,9 +9,10 @@ export default function WhychoseUS() {
   return (
     <section className="w-full flex justify-center items-center bg-white">
       <Image 
-        src="/logo.png"
+        src="/Vertex_Logo.png"
         width={80}
         height={80}
+        className=" w-32 h-28 mb-4 "
       />
     </section>
   );
