@@ -1,7 +1,72 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['maps.googleapis.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'maps.googleapis.com',
+      },
+       {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'venuswomenshospital.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.modernghana.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'eqas.alquds.edu',
+      },
+      {
+        protocol: 'https',
+        hostname: 'blog.healthtracka.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'stmarysphysicianassociates.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.avensonline.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.the-rheumatologist.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'd2csxpduxe849s.cloudfront.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.news-medical.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'nationalprivateinvestigators.co.uk',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cdn.prod.website-files.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.thomsonmedical.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'docsmedicalgroup.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'subangjayamedicalcentre.com',
+      }
+    ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

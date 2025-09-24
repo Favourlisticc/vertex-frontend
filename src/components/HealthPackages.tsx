@@ -227,44 +227,49 @@ export default function HealthPackages() {
         </motion.div>
         
        {/* Desktop Sticky Header */}
-       <motion.div 
-          className={`hidden md:block sticky top-0 z-20 bg-white transition-all duration-300 ${stickyDesktop ? 'shadow-md py-2 px-4' : 'py-0 opacity-0 pointer-events-none h-0 overflow-hidden'}`}
-          initial={false}
-          animate={{ 
-            padding: stickyDesktop ? '0.5rem 1rem' : '0',
-            opacity: stickyDesktop ? 1 : 0,
-            height: stickyDesktop ? 'auto' : '0',
-          }}
-        >
-          <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">HEALTH PACKAGES</h2>
-            <div className="flex space-x-4">
-              {packages.map((pkg) => (
-                <button 
-                  key={pkg.id}
-                  onClick={() => setSelectedPackage(pkg.id)}
-                  className={`py-2 px-3 rounded-md transition-colors duration-200 flex items-center
-                    ${selectedPackage === pkg.id ? `bg-${pkg.id === 'basic' ? 'amber-100' : pkg.id === 'standard' ? 'gray-100' : 'yellow-100'} ${pkg.color}` : 'text-gray-500 hover:bg-gray-100'}`}
-                >
-                  <span className="text-lg mr-1">{pkg.medal}</span>
-                  <span className="font-medium">{pkg.name}</span>
-                  <span className="ml-1 text-sm">({pkg.price})</span>
-                </button>
-              ))}
-            </div>
-          </div>
-        </motion.div>
+       
+<div className="flex justify-center">
+  <motion.div 
+    className={`hidden w-fit md:block sticky top-0 z-20 bg-white transition-all duration-300 ${stickyDesktop ? 'shadow-md py-2 px-4' : 'py-0 opacity-0 pointer-events-none h-0 overflow-hidden'}`}
+    initial={false}
+    animate={{ 
+      padding: stickyDesktop ? '0.5rem 1rem' : '0',
+      opacity: stickyDesktop ? 1 : 0,
+      height: stickyDesktop ? 'auto' : '0',
+    }}
+  >
+    <div className="flex items-center justify-between">
+      <h2 className="text-xl font-bold text-gray-900">HEALTH PACKAGES</h2>
+      <div className="flex space-x-4">
+        {packages.map((pkg) => (
+          <button 
+            key={pkg.id}
+            onClick={() => setSelectedPackage(pkg.id)}
+            className={`py-2 px-3 rounded-md transition-colors duration-200 flex items-center
+              ${selectedPackage === pkg.id ? `bg-${pkg.id === 'basic' ? 'amber-100' : pkg.id === 'standard' ? 'gray-100' : 'yellow-100'} ${pkg.color}` : 'text-gray-500 hover:bg-gray-100'}`}
+          >
+            <span className="text-lg mr-1">{pkg.medal}</span>
+            <span className="font-medium">{pkg.name}</span>
+            <span className="ml-1 text-sm">({pkg.price})</span>
+          </button>
+        ))}
+      </div>
+    </div>
+  </motion.div>
+</div>
+     
         
        {/* Desktop Table View (hidden on small screens) */}
-       <motion.div 
+       <div className="flex justify-center">
+        <motion.div 
           ref={desktopTableRef}
-          className="hidden md:block bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200"
+          className="hidden md:block  w-fit bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4, duration: 0.6 }}
         >
           <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className=" w-fit divide-y divide-gray-200">
               <thead className={`bg-gray-50 ${stickyDesktop ? 'sticky top-16 z-10 shadow-sm' : ''}`}>
                 <tr>
                   <th scope="col" className="px-6 py-4 text-left text-base font-medium text-gray-500 tracking-wider w-1/3">
@@ -404,6 +409,7 @@ export default function HealthPackages() {
             </table>
           </div>
         </motion.div>
+       </div>
 
         {/* Mobile View (visible only on small screens) */}
         <div className="md:hidden" ref={tableRef}>
@@ -529,9 +535,10 @@ export default function HealthPackages() {
         </div>
 
         {/* Common Footer for both views */}
-        <div className="bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200">
+        <div className="flex justify-center">
+        <div className="bg-white shadow-xl mt-4 rounded-xl overflow-hidden border border-gray-200">
           {/* Call to Action Buttons */}
-          <div className="bg-gray-50 px-4 sm:px-6 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
+          <div className="bg-gray-50 px-4 sm:px-2 py-4 flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <motion.div 
               className="flex items-center mb-4 sm:mb-0"
               initial={{ opacity: 0, x: -20 }}
@@ -599,6 +606,7 @@ export default function HealthPackages() {
               </svg>
             </div>
           </motion.div>
+        </div>
         </div>
       </div>
     </div>

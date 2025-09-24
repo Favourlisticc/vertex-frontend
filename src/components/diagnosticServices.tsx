@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-// Define the Service type
+
 interface Service {
   id: string;
   name: string;
@@ -14,9 +14,10 @@ interface Service {
   turnaroundTime: string;
   price: string;
   ctaText: string;
+  image: string;
 }
 
-const diagnosticServices: Service[] = [
+const diagnosticServices = [
   {
     id: '4d-ultrasound',
     name: '4D Ultrasound & Radiology',
@@ -36,7 +37,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Imaging (no sample)',
     turnaroundTime: 'Immediate scan • Report in 2 hrs',
     price: '₦15,000',
-    ctaText: 'Book a Scan'
+    ctaText: 'Book a Scan',
+    image: 'https://venuswomenshospital.com/uploads/image/3d-4d.jpg'
   },
   {
     id: 'blood-group',
@@ -56,7 +58,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Whole blood (EDTA)',
     turnaroundTime: '24 hrs',
     price: '₦6,000',
-    ctaText: 'Order Blood Typing'
+    ctaText: 'Order Blood Typing',
+    image: 'https://cdn.modernghana.com/content__/640/457/211202063645-0f738m3yxs-genotype.png'
   },
   {
     id: 'clinical-chemistry',
@@ -77,7 +80,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Blood (serum)',
     turnaroundTime: '24 hrs',
     price: '₦12,000',
-    ctaText: 'Order Chemistry Panel'
+    ctaText: 'Order Chemistry Panel',
+    image: 'https://eqas.alquds.edu/images/2019/01/12/3.jpg'
   },
   {
     id: 'domestic-staff',
@@ -98,7 +102,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Blood, urine, stool (plus chest X-ray)',
     turnaroundTime: '48 hrs',
     price: '₦15,000',
-    ctaText: 'Schedule Staff Screening'
+    ctaText: 'Schedule Staff Screening',
+    image: 'https://blog.healthtracka.com/wp-content/uploads/2023/02/8bbdacb777683d416e41c7bb26014573-1024x683.jpg.webp'
   },
   {
     id: 'endocrinology',
@@ -119,7 +124,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Blood (serum)',
     turnaroundTime: '48 hrs',
     price: '₦15,000',
-    ctaText: 'Check Hormone Levels'
+    ctaText: 'Check Hormone Levels',
+    image: 'https://stmarysphysicianassociates.com/wp-content/uploads/2024/10/Endocrinology.jpg'
   },
   {
     id: 'hematology',
@@ -140,7 +146,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Whole blood (EDTA, citrate)',
     turnaroundTime: '4 hrs',
     price: '₦6,000',
-    ctaText: 'Get Blood Count'
+    ctaText: 'Get Blood Count',
+    image: 'https://www.avensonline.org/blog/wp-content/uploads/2015/08/Hematology.jpg'
   },
   {
     id: 'immunology',
@@ -161,9 +168,9 @@ const diagnosticServices: Service[] = [
     sampleType: 'Blood serum',
     turnaroundTime: '24 hrs',
     price: '₦22,000',
-    ctaText: 'Order Immunology Panel'
+    ctaText: 'Order Immunology Panel',
+    image: 'https://www.the-rheumatologist.org/wp-content/uploads/2023/11/AdobeStock_336670696.png'
   },
-  // More services will be added here...
   {
     id: 'microbiology',
     name: 'Microbiology',
@@ -183,7 +190,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Urine, blood, stool, swabs',
     turnaroundTime: '48-72 hrs',
     price: '₦14,000',
-    ctaText: 'Order Culture Test'
+    ctaText: 'Order Culture Test',
+    image: 'https://d2csxpduxe849s.cloudfront.net/media/E32629C6-9347-4F84-81FEAEF7BFA342B3/D7C8E8F5-EB21-4B26-BE7D25D7B2089254/B9458B20-0699-4EE0-A50A3EE8F902C258/WebsiteWebP_XL-FMICB_Main%20Visual_Cyan_Website.webp'
   },
   {
     id: 'parasitology',
@@ -204,7 +212,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Blood, stool, urine',
     turnaroundTime: '2-24 hrs',
     price: '₦12,000',
-    ctaText: 'Check for Parasites'
+    ctaText: 'Check for Parasites',
+    image: 'https://d2csxpduxe849s.cloudfront.net/media/E32629C6-9347-4F84-81FEAEF7BFA342B3/B6C6F17D-15EB-45FC-AEB84A95BBC38952/7D8763B0-B77D-4A10-A1B4F5363CC2F57A/WebsiteJpg_XL-FPARA_Main%20Visual_Orange_Website.jpg'
   },
   {
     id: 'pathology',
@@ -225,7 +234,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Tissue, cells, fluids',
     turnaroundTime: '48 hrs (standard) • 24 hrs (express)',
     price: '₦28,500',
-    ctaText: 'Book Pathology Pickup'
+    ctaText: 'Book Pathology Pickup',
+    image: 'https://www.news-medical.net/images/Article_Images/ImageForArticle_2145_16375579068259097.jpg'
   },
   {
     id: 'pre-employment',
@@ -246,7 +256,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Blood, urine, X-ray',
     turnaroundTime: '48 hrs',
     price: '₦15,000 - ₦30,000',
-    ctaText: 'Schedule Employment Check'
+    ctaText: 'Schedule Employment Check',
+    image: 'https://nationalprivateinvestigators.co.uk/wp-content/uploads/2025/02/advanced-pre-employment-checks-service.jpg'
   },
   {
     id: 'semen-analysis',
@@ -266,7 +277,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Semen sample',
     turnaroundTime: '24 hrs',
     price: '₦14,000',
-    ctaText: 'Book Fertility Test'
+    ctaText: 'Book Fertility Test',
+    image: 'https://cdn.prod.website-files.com/60937db4959b5603e9cce95d/60f678ba0cd3f54a49130427_Semen%20Analysis%20Report%20Cloudnine.jpg'
   },
   {
     id: 'serology',
@@ -287,7 +299,8 @@ const diagnosticServices: Service[] = [
     sampleType: 'Blood (serum)',
     turnaroundTime: '24 hrs',
     price: '₦5,000',
-    ctaText: 'Check Infection Status'
+    ctaText: 'Check Infection Status',
+    image: 'https://www.thomsonmedical.com/_next/image?url=https%3A%2F%2Fimages.contentstack.io%2Fv3%2Fassets%2Fblt5f400315f9e4f0b3%2Fblt3500a68e762d37ac%2F68104a0077bfb629074b6979%2Fscreening_serology-test_hero-image.png%3Fbranch%3Dprod&w=3840&q=75'
   },
   {
     id: 'sti-uti',
@@ -308,15 +321,17 @@ const diagnosticServices: Service[] = [
     sampleType: 'Urine, swab, blood',
     turnaroundTime: '4 hrs (NAAT) • 24 hrs (culture)',
     price: '₦14,000',
-    ctaText: 'Get Tested Today'
+    ctaText: 'Get Tested Today',
+    image: 'https://docsmedicalgroup.com/docsurgentcare/wp-content/uploads/sites/2/2023/09/lab-doctor-performing-medical-exam-urine-1.jpg'
   }
 ];
 
 export default function DiagnosticServices() {
-  const [selectedService, setSelectedService] = useState<Service | null>(null);
+ const [selectedService, setSelectedService] = useState<Service | null>(null);
   const [isCardOpen, setIsCardOpen] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(4);
 
-  const handleServiceClick = (service: Service) => {
+const handleServiceClick = (service: Service) => {
     setSelectedService(service);
     setIsCardOpen(true);
   };
@@ -324,6 +339,12 @@ export default function DiagnosticServices() {
   const closeCard = () => {
     setIsCardOpen(false);
   };
+
+  const loadMore = () => {
+    setVisibleCount(prev => Math.min(prev + 4, diagnosticServices.length));
+  };
+
+  const canLoadMore = visibleCount < diagnosticServices.length;
 
   // Variants for animations
   const containerVariants = {
@@ -342,7 +363,7 @@ export default function DiagnosticServices() {
       y: 0,
       opacity: 1,
       transition: {
-        type: 'spring',
+        type: 'spring' as const,
         stiffness: 300,
         damping: 24
       }
@@ -351,7 +372,7 @@ export default function DiagnosticServices() {
       scale: 1.05,
       boxShadow: "0px 10px 30px rgba(0, 0, 0, 0.1)",
       transition: {
-        type: 'spring',
+      type: 'spring' as const,
         stiffness: 300,
         damping: 15
       }
@@ -364,7 +385,7 @@ export default function DiagnosticServices() {
       opacity: 1,
       y: 0,
       transition: {
-        type: 'spring',
+       type: 'spring' as const,
         stiffness: 300,
         damping: 25
       }
@@ -389,36 +410,72 @@ export default function DiagnosticServices() {
       </div>
 
       <motion.div 
-        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12"
         variants={containerVariants}
         initial="hidden"
         animate="visible"
       >
-        {diagnosticServices.map((service) => (
+        {diagnosticServices.slice(0, visibleCount).map((service) => (
           <motion.div
             key={service.id}
-            className="bg-white rounded-xl p-6 border border-gray-100 cursor-pointer overflow-hidden"
-           
+            className="bg-white rounded-xl border border-gray-100 cursor-pointer overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300"
+            variants={itemVariants}
             whileHover="hover"
             onClick={() => handleServiceClick(service)}
           >
             <div className="h-full flex flex-col">
-              <div className="mb-4">
-                <span className="inline-block bg-teal-50 text-teal-600 rounded-full px-3 py-1 text-sm font-medium">
-                  {service.tagline}
-                </span>
+              {/* Image Section */}
+              <div className="h-48 overflow-hidden">
+                <img 
+                  src={service.image} 
+                  alt={service.name}
+                  className="w-full h-full object-cover transition-transform duration-300 hover:scale-105"
+                />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.name}</h3>
-              <p className="text-gray-600 mb-4 flex-grow">{service.description.split('.')[0]}.</p>
-              <div className="flex justify-between items-center mt-auto">
-                <span className="text-teal-600 font-bold">{service.price}</span>
-                <span className="text-sm text-gray-500">{service.turnaroundTime.split('•')[0].trim()}</span>
+              
+              {/* Content Section */}
+              <div className="p-6 flex flex-col flex-grow">
+                <div className="mb-3">
+                  <span className="inline-block bg-teal-50 text-teal-600 rounded-full px-3 py-1 text-sm font-medium">
+                    {service.tagline}
+                  </span>
+                </div>
+                
+                <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
+                  {service.name}
+                </h3>
+                
+                <p className="text-gray-600 mb-4 flex-grow line-clamp-2">
+                  {service.description}
+                </p>
+                
+                <div className="flex justify-between items-center mt-auto pt-4 border-t border-gray-100">
+                  <span className="text-teal-600 font-bold text-lg">{service.price}</span>
+                  <span className="text-sm text-gray-500 bg-gray-50 px-2 py-1 rounded">
+                    {service.turnaroundTime.split('•')[0].trim()}
+                  </span>
+                </div>
               </div>
             </div>
           </motion.div>
         ))}
       </motion.div>
 
+      {/* Load More Button */}
+      {canLoadMore && (
+        <div className="text-center">
+          <motion.button
+            onClick={loadMore}
+            className="px-8 py-3 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors duration-300 shadow-md hover:shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Show More Services ({diagnosticServices.length - visibleCount} remaining)
+          </motion.button>
+        </div>
+      )}
+
+      {/* Modal Card */}
       <AnimatePresence>
         {isCardOpen && selectedService && (
           <motion.div 
@@ -430,16 +487,27 @@ export default function DiagnosticServices() {
           >
             <motion.div
               className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+              variants={cardVariants}
               initial="hidden"
               animate="visible"
               exit="exit"
               onClick={(e) => e.stopPropagation()}
             >
+              {/* Modal Image */}
+              <div className="h-64 overflow-hidden">
+                <img 
+                  src={selectedService.image} 
+                  alt={selectedService.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+
               <div className="p-6 sm:p-8">
                 <div className="flex justify-between items-start mb-6">
                   <div>
-                    <h2 className="text-2xl font-bold text-gray-900 mb-1">{selectedService.name} – {selectedService.tagline}</h2>
-                    <p className="text-gray-600">{selectedService.description}</p>
+                    <h2 className="text-2xl font-bold text-gray-900 mb-1">{selectedService.name}</h2>
+                    <p className="text-teal-600 font-medium italic">"{selectedService.tagline}"</p>
+                    <p className="text-gray-600 mt-2">{selectedService.description}</p>
                   </div>
                   <button 
                     onClick={closeCard}
@@ -495,17 +563,17 @@ export default function DiagnosticServices() {
                 </div>
 
                 <motion.button
-  className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors"
-  whileHover={{ scale: 1.02 }}
-  whileTap={{ scale: 0.98 }}
-  onClick={() => {
-    const message = `Hello! I'm interested in booking the ${selectedService.name} service.`;
-    const whatsappUrl = `https://wa.me/2348166634066?text=${encodeURIComponent(message)}`;
-    window.open(whatsappUrl, '_blank');
-  }}
->
-  {selectedService.ctaText}
-</motion.button>
+                  className="w-full py-4 bg-teal-600 hover:bg-teal-700 text-white font-semibold rounded-lg transition-colors"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    const message = `Hello! I'm interested in booking the ${selectedService.name} service.`;
+                    const whatsappUrl = `https://wa.me/2348166634066?text=${encodeURIComponent(message)}`;
+                    window.open(whatsappUrl, '_blank');
+                  }}
+                >
+                  {selectedService.ctaText}
+                </motion.button>
               </div>
             </motion.div>
           </motion.div>

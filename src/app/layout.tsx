@@ -11,7 +11,7 @@ export const metadata: Metadata = {
     default: 'Vertex Diagnostic Center | Medical Screenings in Lekki',
     template: '%s | Vertex Diagnostic Center'
   },
-  description: 'Professional medical screening services in Lekki Phase 1, Lagos. Pre-employment checks, comprehensive health audits, and diagnostic staff screening.',
+  description: 'Professional medical screening services in Lekki Phase 1, Lagos. Pre-employment checks, comprehensive health audits, and domestic staff screening.',
   metadataBase: new URL('https://lekkilab.com'),
   alternates: {
     canonical: 'https://lekkilab.com'
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   keywords: ['medical screening', 'diagnostic center', 'health check', 'pre-employment screening', 'Lekki', 'Lagos'],
   openGraph: {
     title: 'Vertex Diagnostic Center | Medical Screenings in Lekki',
-    description: 'Professional medical screening services in Lekki Phase 1, Lagos. Pre-employment checks, comprehensive health audits, and diagnostic staff screening.',
+    description: 'Professional medical screening services in Lekki Phase 1, Lagos. Pre-employment checks, comprehensive health audits, and domestic staff screening.',
     url: 'https://lekkilab.com',
     siteName: 'Vertex Diagnostic Center',
     locale: 'en_NG',
