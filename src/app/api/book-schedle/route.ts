@@ -10,10 +10,6 @@ export async function POST(request: NextRequest) {
       phone,
       date,
       time,
-      package: packageName,
-      service,
-      message,
-      type = 'health_package'
     } = body;
 
     // Create transporter using Zoho Mail SMTP
@@ -27,10 +23,6 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    const serviceName = service || packageName;
-    const subject = type === 'health_package' 
-      ? `New Health Package Booking: ${packageName}`
-      : `New Diagnostic Service Booking: ${serviceName}`;
 
     // Email to admin
     const adminEmailHtml = `
@@ -49,15 +41,9 @@ export async function POST(request: NextRequest) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>New Booking Request</h1>
+              <h1>New Appointment Booked</h1>
             </div>
             <div class="content">
-              <div class="field">
-                <span class="label">Service Type:</span> ${type === 'health_package' ? 'Health Package' : 'Diagnostic Service'}
-              </div>
-              <div class="field">
-                <span class="label">Service/Package:</span> ${serviceName}
-              </div>
               <div class="field">
                 <span class="label">Customer Name:</span> ${name}
               </div>
@@ -73,9 +59,7 @@ export async function POST(request: NextRequest) {
               <div class="field">
                 <span class="label">Preferred Time:</span> ${time}
               </div>
-              <div class="field">
-                <span class="label">Message:</span> ${message}
-              </div>
+        
               <div class="field">
                 <span class="label">Booking Time:</span> ${new Date().toLocaleString()}
               </div>
@@ -103,16 +87,14 @@ export async function POST(request: NextRequest) {
         <body>
           <div class="container">
             <div class="header">
-              <h1>Booking Confirmation</h1>
+              <h1>Appointment Booking Confirmation</h1>
             </div>
             <div class="content">
               <p>Dear ${name},</p>
               
-              <p>Thank you for booking with Vertex Diagnostic Center! Your appointment has been received and is being processed.</p>
+              <p>Thank you for booking an appointment with Vertex Diagnostic Center! Your appointment has been received and is being processed.</p>
               
-              <div class="field">
-                <span class="label">Service Booked:</span> ${serviceName}
-              </div>
+            
               <div class="field">
                 <span class="label">Appointment Date:</span> ${date}
               </div>
@@ -126,7 +108,6 @@ export async function POST(request: NextRequest) {
               <ul>
                 <li>Please arrive 15 minutes before your scheduled appointment</li>
                 <li>Bring a valid ID card</li>
-                <li>Fasting may be required for some tests (we'll inform you if needed)</li>
               </ul>
               
               <p>If you have any questions, please contact us at:</p>
@@ -146,7 +127,7 @@ export async function POST(request: NextRequest) {
     await transporter.sendMail({
       from: 'vertexxlab@zohomail.com',
       to: ['vertexdiagandlab@gmail.com', 'favoursunday600@gmail.com'],
-      subject: subject,
+      subject: "New Appointment Booked",
       html: adminEmailHtml,
     });
 

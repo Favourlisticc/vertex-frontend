@@ -30,7 +30,7 @@ export default function MapComponent({ mapCoords }) {
       />
       <Marker position={[mapCoords?.lat || 6.433, mapCoords?.lng || 3.452]} icon={customIcon}>
         <Popup>
-          <b>Vertex Diagnostic Center</b><br />40 Providence Street<br />Lekki Phase 1, Lagos
+          <b>Vertex Diagnostic Center</b><br /><br />Lekki Phase 1, Lagos
         </Popup>
       </Marker>
       <Circle

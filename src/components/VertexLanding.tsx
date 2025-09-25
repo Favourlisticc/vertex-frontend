@@ -11,6 +11,8 @@ import InfiniteImageSlider from "./InfiniteImageSlider";
 import HealthPackages from "./HealthPackages";
 import DiagnosticServices from "./diagnosticServices";
 
+import { motion, AnimatePresence } from 'framer-motion';
+
 import WhychoseUS from "./WhyChoose";
 import Faq from "./FAQ";
 
@@ -22,17 +24,63 @@ const MapWithNoSSR = dynamic(
   { ssr: false }
 );
 
+
+interface FormData {
+  name: string;
+  email: string;
+  phone: string;
+  date: string;
+  time: string;
+}
+
+interface Errors {
+  name?: string;
+  email?: string;
+  phone?: string;
+  date?: string;
+  time?: string;
+}
+
 export default function VertexLanding() {
   // Toggle open panel
   const [openId, setOpenId] = useState<string | null>(null);
 
   const [showScheduler, setShowScheduler] = useState(false);
-  const [selectedDateTime, setSelectedDateTime] = useState<Date | null>(null);
-  const [selectedEmail, setSelectedEmail] = useState("");
+
   const [bookingStatus, setBookingStatus] = useState<"success" | "error" | null>(null);
   const [isVisible, setIsVisible] = useState(false);
 
+  const [minDate, setMinDate] = useState<string>(''); // For setting minimum date
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+
   const [currentSlide, setCurrentSlide] = useState(0);
+
+  const [formData, setFormData] = useState<FormData>({
+    name: "",
+    email: "",
+    phone: "",
+    date: "",
+    time: "08:30",
+  });
+
+  const [errors, setErrors] = useState<Errors>({});
+
+    // Handle form input changes
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+    
+    if (errors[name as keyof Errors]) {
+      setErrors({
+        ...errors,
+        [name]: undefined
+      });
+    }
+  };
   
   // Animation on component mount
   useEffect(() => {
@@ -118,16 +166,104 @@ export default function VertexLanding() {
     lat: 6.433,
     lng: 3.452
   };
-  
-  // OpenStreetMap URL (no API key needed)
-  const mapUrl = `https://www.openstreetmap.org/?mlat=${mapCoords.lat}&mlon=${mapCoords.lng}&zoom=15&layers=M`;
-  
-  // Static map image
-  const mapSrc = "/images/map-preview.png";
 
-  /* --------------------------------------------------------------------
-     2.  Mark-up
-  -------------------------------------------------------------------- */
+    const validateForm = () => {
+    const newErrors: Errors = {};
+    
+    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+      newErrors.email = "Email is invalid";
+    }
+    
+    if (!formData.phone.trim()) {
+      newErrors.phone = "Phone number is required";
+    } else if (!/^\d{10,11}$/.test(formData.phone.replace(/[^0-9]/g, ''))) {
+      newErrors.phone = "Please enter a valid phone number";
+    }
+    
+    if (!formData.date) {
+      newErrors.date = "Date is required";
+    } else {
+      const selectedDate = new Date(formData.date);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0); // Reset time part for accurate comparison
+      
+      if (selectedDate < today) {
+        newErrors.date = "Please select a future date";
+      }
+    }
+  
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+    const closeCard = () => {
+    setShowScheduler(false);
+  };
+  
+
+  // Format date for display
+  const formatDate = (dateString: string) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { 
+      weekday: 'long', 
+      year: 'numeric', 
+      month: 'long', 
+      day: 'numeric' 
+    });
+  };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    if (!validateForm()) {
+      setBookingStatus("error");
+      return;
+    }
+
+    setIsSubmitting(true);
+    setBookingStatus(null);
+
+    try {
+      const response = await fetch('/api/book-schedle', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        setBookingStatus("success");
+        // Reset form
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          date: "",
+          time: "08:30",
+        });
+        
+        // Close modal after 2 seconds
+        setTimeout(() => {
+          closeCard();
+        }, 2000);
+      } else {
+        setBookingStatus("error");
+        console.log('Booking failed:', result.error);
+      }
+    } catch (error) {
+      setBookingStatus("error");
+      console.log('Error submitting form:', error);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
   return (
     <>
     <Header />
@@ -416,7 +552,7 @@ export default function VertexLanding() {
         Find Us Easily
       </h2>
       <p className="mt-3 text-gray-600 max-w-2xl mx-auto">
-        We're conveniently located at 40 Providence Street in Lekki Phase 1, Lagos. 
+        We're conveniently located at in Lekki Phase 1, Lagos. 
         Multiple transportation options make reaching us simple.
       </p>
     </div>
@@ -614,7 +750,6 @@ export default function VertexLanding() {
         <div>
           <p className="font-medium text-white">Our Location</p>
           <p className="mt-1.5 leading-relaxed">
-            40 Providence Street<br />
             Lekki Phase 1, Lagos
           </p>
         </div>
@@ -725,6 +860,12 @@ export default function VertexLanding() {
 
       {/* Scheduler Modal */}
       {showScheduler && (
+      <motion.form
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        onSubmit={handleSubmit}
+        className="space-y-4"
+      >
         <div className="fixed inset-0 z-50 overflow-y-auto" role="dialog" aria-modal="true">
           <div className="flex min-h-screen items-center justify-center p-4">
             <div className="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true" onClick={() => { setShowScheduler(false); setBookingStatus(null); }} />
@@ -740,52 +881,114 @@ export default function VertexLanding() {
               </div>
 
               <div className="space-y-4">
-                <div>
-                  <label htmlFor="date" className="block text-sm font-medium text-gray-900">
-                    Date & Time
-                  </label>
-                  <div className="mt-1">
-                    <DatePicker
+
+                  <div>
+                    <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+                      Preferred Date *
+                    </label>
+                    <input
+                      type="date"
                       id="date"
-                      selected={selectedDateTime}
-                      onChange={(date: Date | null) => setSelectedDateTime(date)}
-                      showTimeSelect
-                      filterDate={(date) => date.getDay() !== 0}
-                      filterTime={(time) => {
-                        const day = time.getDay();
-                        const hours = time.getHours();
-                        const minutes = time.getMinutes();
-                        if (day >= 1 && day <= 5) {
-                          return (hours > 8 || (hours === 8 && minutes >= 0)) && (hours < 17 || (hours === 17 && minutes === 0));
-                        }
-                        if (day === 6) {
-                          return (hours > 9 || (hours === 9 && minutes >= 0)) && (hours < 15 || (hours === 15 && minutes === 0));
-                        }
-                        return false;
-                      }}
-                      timeIntervals={30}
-                      dateFormat="MMMM d, yyyy h:mm aa"
-                      className="block w-full rounded-lg border-gray-300 py-2.5 pl-3 pr-10 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                      placeholderText="Select date & time"
+                      name="date"
+                      value={formData.date}
+                      onChange={handleChange}
+                      min={minDate}
+                      className={`w-full px-3 py-2 border text-black rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                        errors.date ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     />
+                    {errors.date && <p className="text-red-500 text-xs mt-1">{errors.date}</p>}
+                    {minDate && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Available dates start from {formatDate(minDate)}
+                      </p>
+                    )}
                   </div>
-                </div>
+
+                   <div>
+                        <label htmlFor="time" className="block text-sm font-medium text-gray-700 mb-1">
+                          Preferred Time *
+                        </label>
+                        <select
+                          id="time"
+                          name="time"
+                          value={formData.time}
+                          onChange={handleChange}
+                          className="w-full px-3 py-2 border text-black border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+                        >
+                          <option value="08:30">08:30 AM</option>
+                          <option value="09:00">09:00 AM</option>
+                          <option value="09:30">09:30 AM</option>
+                          <option value="10:00">10:00 AM</option>
+                          <option value="10:30">10:30 AM</option>
+                          <option value="11:00">11:00 AM</option>
+                          <option value="11:30">11:30 AM</option>
+                          <option value="12:00">12:00 PM</option>
+                          <option value="12:30">12:30 PM</option>
+                          <option value="13:00">01:00 PM</option>
+                          <option value="13:30">01:30 PM</option>
+                          <option value="14:00">02:00 PM</option>
+                          <option value="14:30">02:30 PM</option>
+                          <option value="15:00">03:00 PM</option>
+                          <option value="15:30">03:30 PM</option>
+                          <option value="16:00">04:00 PM</option>
+                        </select>
+                      </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-900">
-                    Your Email
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+                    Email Address *
                   </label>
-                  <div className="mt-1">
-                    <input
-                      type="email"
-                      id="email"
-                      value={selectedEmail}
-                      onChange={(e) => setSelectedEmail(e.target.value)}
-                      placeholder="you@example.com"
-                      className="block w-full rounded-lg border-gray-300 py-2.5 pl-3 pr-10 text-sm shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                    />
-                  </div>
+                  <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className={`w-full px-3 py-2 border text-black rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                      errors.email ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter your email"
+                  />
+                  {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
+
+                  <div>
+                    <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      id="name"
+                      name="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      className={`w-full px-3 py-2 border text-black rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                        errors.name ? 'border-red-500' : 'border-gray-600'
+                      }`}
+                      placeholder="Enter your full name"
+                    />
+                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+                  </div>
+
+                    <div>
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                        Phone Number *
+                      </label>
+                      <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className={`w-full px-3 py-2 border text-black rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-teal-500 ${
+                          errors.phone ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="Enter your phone number"
+                      />
+                      {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                    </div>
+
               </div>
 
               <div className="mt-6 flex items-center justify-end gap-3">
@@ -796,33 +999,28 @@ export default function VertexLanding() {
                 >
                   Cancel
                 </button>
-                <button
-                  type="button"
-                  onClick={async () => {
-                    if (!selectedDateTime || !selectedEmail) {
-                      setBookingStatus("error");
-                      return;
-                    }
-                    try {
-                      const res = await fetch("/api/book-appointment", {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({ datetime: selectedDateTime, email: selectedEmail }),
-                      });
-                      if (res.ok) setBookingStatus("success");
-                      else setBookingStatus("error");
-                    } catch {
-                      setBookingStatus("error");
-                    }
-                  }}
-                  className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2"
-                >
-                  Confirm Appointment
-                </button>
+              <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="w-full bg-teal-600 text-white py-3 px-4 rounded-md hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                      >
+                        {isSubmitting ? (
+                          <>
+                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Submitting...
+                          </>
+                        ) : (
+                          'Submit Booking Request'
+                        )}
+                      </button>
               </div>
             </div>
           </div>
         </div>
+      </motion.form>
       )}
     </>
   );
