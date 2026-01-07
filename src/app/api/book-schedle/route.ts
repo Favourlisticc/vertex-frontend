@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
     // Send email to admin
     await transporter.sendMail({
       from: 'vertexxlab@zohomail.com',
-      to: ['vertexdiagandlab@gmail.com', 'favoursunday600@gmail.com'],
+      to: 'vertexdiagandlab@gmail.com', 
       subject: "New Appointment Booked",
       html: adminEmailHtml,
     });

@@ -353,7 +353,7 @@ export default function VertexLanding() {
               {/* Action Buttons */}
               <div className="flex w-full flex-col gap-4 sm:flex-row sm:justify-center md:gap-6">
                 <a 
-                  href="https://wa.me/2348148390839?text=Hello%20Vertex%20Diagnostic%20Center,%20I'd%20like%20to%20book%20an%20appointment"
+                  href="https://wa.me/2348166634066?text=Hello%20Vertex%20Diagnostic%20Center,%20I'd%20like%20to%20book%20an%20appointment"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group w-full rounded-lg bg-green-600 px-6 sm:px-8 py-4 text-center font-semibold text-white shadow-lg transition-all hover:bg-green-700 hover:shadow-xl active:scale-95 sm:hover:scale-105 flex items-center justify-center gap-3 sm:w-auto"

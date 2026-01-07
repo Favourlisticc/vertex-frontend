@@ -248,7 +248,7 @@ export async function POST(request: NextRequest) {
     // Send notification email to admin
     const adminEmailPromise = transporter.sendMail({
       from: `"Vertex Diagnostic & Laboratory" <${process.env.ZOHO_EMAIL}>`,
-      to: ['favoursunday600@gmail.com', 'Vertexdiagandlab@gmail.com'],
+      to: 'Vertexdiagandlab@gmail.com',
       subject: `New Service Booking: ${sanitizedService} - ${sanitizedName}`,
       html: adminEmailContent,
       headers: {
